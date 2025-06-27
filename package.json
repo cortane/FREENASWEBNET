@@ -1,0 +1,75 @@
+{
+  "name": "nasnetfree",
+  "version": "1.0.0",
+  "description": "Webベースの軽量NASシステム - シンプルで強力なファイル管理",
+  "main": "server.js",
+  "bin": {
+    "nasnetfree": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "install-global": "npm install -g .",
+    "uninstall-global": "npm uninstall -g nasnetfree",
+    "postinstall": "node install.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"No linter configured\"",
+    "build": "echo \"No build process required\""
+  },
+  "dependencies": {
+    "ws": "^8.14.2",
+    "formidable": "^3.5.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "os": [
+    "win32",
+    "linux",
+    "darwin"
+  ],
+  "cpu": [
+    "x64",
+    "x86",
+    "arm64"
+  ],
+  "keywords": [
+    "nas",
+    "file-server",
+    "websocket",
+    "file-management",
+    "cloud-storage",
+    "web-ui",
+    "nodejs",
+    "file-browser",
+    "storage",
+    "file-sharing"
+  ],
+  "author": {
+    "name": "NasNetFree Team",
+    "email": "support@nasnetfree.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nasnetfree/nasnetfree.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nasnetfree/nasnetfree/issues"
+  },
+  "homepage": "https://github.com/nasnetfree/nasnetfree#readme",
+  "files": [
+    "server.js",
+    "index.html",
+    "install.js",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "preferGlobal": true,
+  "config": {
+    "port": 3000,
+    "rootDir": "T:\\Users"
+  }
+} 

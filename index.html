@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>NasNetFree</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', 'Meiryo', 'Hiragino Sans', 'Arial', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+    }
+    #sidebar {
+      width: 180px;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      min-height: 100vh;
+      padding: 28px 10px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 18px;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 10;
+    }
+    #sidebarUser {
+      font-size: 17px;
+      font-weight: bold;
+      color: #58a6ff;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    #sidebarLogout {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 7px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: background 0.2s;
+    }
+    #sidebarLogout:hover {
+      background: #30363d;
+      color: #fff;
+    }
+    #storageInfo {
+      color: #8b949e;
+      font-size: 13px;
+      margin-top: auto;
+      line-height: 1.4;
+    }
+    #main {
+      flex: 1;
+      margin-left: 180px;
+      min-height: 100vh;
+      background: #0d1117;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .container {
+      background: #161b22;
+      padding: 72px 72px 54px 72px;
+      border-radius: 32px;
+      box-shadow: 0 12px 64px rgba(0,0,0,0.60);
+      max-width: 600px;
+      margin: 90px auto 0 auto;
+      border: 2px solid #30363d;
+    }
+    h2, h3 {
+      color: #c9d1d9;
+      margin-top: 0;
+      font-size: 2.8rem;
+      letter-spacing: 0.01em;
+      margin-bottom: 40px;
+      font-weight: 800;
+    }
+    #topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    #actions {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+    #uploadForm, #mkdirForm {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      margin: 0;
+      height: 44px;
+    }
+    #uploadForm input, #mkdirForm input {
+      border-radius: 6px 0 0 6px;
+      border-right: none;
+      flex: 1 1 160px;
+      min-width: 0;
+      margin: 0;
+      height: 44px;
+      padding: 0 14px;
+      font-size: 16px;
+      background: #0d1117;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      box-sizing: border-box;
+    }
+    #uploadForm button, #mkdirForm button {
+      border-radius: 0 6px 6px 0;
+      border-left: none;
+      height: 44px;
+      padding: 0 22px;
+      font-size: 16px;
+      background: #238636;
+      color: #fff;
+      border: 1px solid #238636;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin: 0;
+    }
+    #uploadForm button:hover, #mkdirForm button:hover {
+      background: #2ea043;
+    }
+    #uploadForm input:focus, #mkdirForm input:focus {
+      border-color: #238636;
+      background: #161b22;
+      outline: none;
+    }
+    #breadcrumb {
+      font-size: 16px;
+      color: #8b949e;
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+    #breadcrumb b {
+      color: #c9d1d9;
+    }
+    .card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+    }
+    .file-item {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 22px 18px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: box-shadow 0.2s, border 0.2s;
+      min-width: 0;
+      word-break: break-all;
+    }
+    .file-item:hover {
+      border-color: #58a6ff;
+      box-shadow: 0 4px 16px rgba(88,166,255,0.08);
+    }
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 19px;
+    }
+    .file-icon {
+      font-size: 26px;
+      color: #8b949e;
+    }
+    .file-meta {
+      font-size: 14px;
+      color: #8b949e;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+    .file-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      justify-content: flex-end;
+    }
+    a {
+      color: #58a6ff;
+      text-decoration: none;
+      transition: color 0.2s;
+      font-size: 16px;
+    }
+    a:hover {
+      color: #79c0ff;
+      text-decoration: underline;
+    }
+    .download-btn {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      padding: 10px 22px;
+      border-radius: 7px;
+      font-size: 15px;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+      margin-left: 0;
+    }
+    .download-btn:hover {
+      background: #30363d;
+      color: #fff;
+    }
+    .error {
+      color: #f85149;
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 12px;
+      border-radius: 7px;
+      margin: 12px 0;
+      font-size: 16px;
+    }
+    .success {
+      color: #238636;
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 12px;
+      border-radius: 7px;
+      margin: 12px 0;
+      font-size: 16px;
+    }
+    #fileContent pre {
+      background: #f8f9fa;
+      color: #24292f;
+      border: 1px solid #30363d;
+      border-radius: 7px;
+      padding: 14px;
+      font-size: 16px;
+      max-height: 400px;
+      overflow: auto;
+    }
+    #toast {
+      position: fixed;
+      top: 24px;
+      right: 32px;
+      z-index: 1000;
+      min-width: 220px;
+      max-width: 350px;
+      display: none;
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 18px 22px;
+      font-size: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      animation: fadein 0.3s;
+    }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* ログイン・登録画面の入力欄・ボタン揃え */
+    #login .input-group, #register .input-group {
+      margin-bottom: 36px;
+    }
+    #login input, #register input {
+      width: 100%;
+      height: 68px;
+      font-size: 1.6rem;
+      /*border-radius: 14px;*/
+      border: 2px solid #30363d;
+      background: #0d1117;
+      color: #c9d1d9;
+      margin-bottom: 28px;
+      padding: 0 28px;
+      box-sizing: border-box;
+      font-weight: 500;
+    }
+    #login button, #register button {
+      width: 100%;
+      height: 68px;
+      font-size: 1.6rem;
+      border-radius: 14px;
+      background: #238636;
+      color: #fff;
+      border: 2px solid #238636;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 24px;
+      transition: background 0.2s;
+      letter-spacing: 0.04em;
+    }
+    #login button:hover, #register button:hover {
+      background: #2ea043;
+    }
+    #login label, #register label {
+      margin-bottom: 16px;
+      font-size: 1.35rem;
+      color: #c9d1d9;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    #login .register-link-btn, #register .back-link-btn {
+      display: block;
+      width: 100%;
+      height: 64px;
+      margin: 0 auto 0 auto;
+      margin-top: 12px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      background: #21262d;
+      color: #58a6ff;
+      border: 2px solid #30363d;
+      border-radius: 14px;
+      text-align: center;
+      line-height: 64px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+    }
+    #login .register-link-btn:hover, #register .back-link-btn:hover {
+      background: #30363d;
+      color: #fff;
+      border-color: #58a6ff;
+      text-decoration: none;
+    }
+    @media (max-width: 1100px) {
+      .container {
+        max-width: 99vw;
+        padding: 18px 2vw 12px 2vw;
+      }
+      .card-list {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 700px) {
+      #sidebar {
+        display: none;
+      }
+      #main {
+        margin-left: 0;
+      }
+      .container {
+        max-width: 99vw;
+        padding: 8px 1vw 6px 1vw;
+        border-radius: 14px;
+      }
+      .card-list {
+        grid-template-columns: 1fr;
+      }
+      #topbar, #actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      #uploadForm input, #mkdirForm input, #uploadForm button, #mkdirForm button, .download-btn {
+        font-size: 15px;
+        padding: 10px 10px;
+        height: 40px;
+      }
+    }
+    .container.filelist-container {
+      max-width: 1100px;
+      padding: 56px 56px 40px 56px;
+      border-radius: 28px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.55);
+      margin: 48px auto 0 auto;
+      border: 2px solid #30363d;
+    }
+    .filelist-container #topbar {
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .filelist-container #actions {
+      gap: 28px;
+    }
+    .filelist-container #uploadForm, .filelist-container #mkdirForm {
+      height: 58px;
+    }
+    .filelist-container #uploadForm input, .filelist-container #mkdirForm input {
+      height: 58px;
+      font-size: 1.25rem;
+      padding: 10px 20px;
+      border-radius: 10px 0 0 10px;
+    }
+    .filelist-container #uploadForm button, .filelist-container #mkdirForm button {
+      height: 58px;
+      font-size: 1.25rem;
+      border-radius: 0 10px 10px 0;
+      padding: 0 32px;
+    }
+    @media (max-width: 1200px) {
+      .container.filelist-container {
+        max-width: 99vw;
+        padding: 18px 2vw 12px 2vw;
+      }
+    }
+    @media (max-width: 700px) {
+      .container.filelist-container {
+        max-width: 99vw;
+        padding: 8px 1vw 6px 1vw;
+        border-radius: 14px;
+      }
+      .filelist-container #topbar, .filelist-container #actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .filelist-container #uploadForm input, .filelist-container #mkdirForm input, .filelist-container #uploadForm button, .filelist-container #mkdirForm button {
+        font-size: 1.05rem;
+        padding: 10px 10px;
+        height: 44px;
+      }
+    }
+    .input-group {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+    }
+    .input-group .prefix {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d1117;
+      color: #8b949e;
+      padding: 0 18px;
+      font-size: 1.15em;
+      border: 2px solid #30363d;
+      border-right: none;
+      border-radius: 14px 0 0 14px;
+      font-weight: bold;
+      height: 68px;
+      box-sizing: border-box;
+      margin-right: -2px;
+    }
+    .input-group input {
+      border-radius: 0 14px 14px 0;
+      border: 2px solid #30363d;
+      border-left: none;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 0 28px;
+      font-size: 1.15em;
+      height: 68px;
+      flex: 1 1 auto;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .input-group input:focus {
+      border-color: #238636;
+      outline: none;
+    }
+    .input-group input:focus ~ .prefix,
+    .input-group .prefix:focus-within {
+      border-color: #238636;
+    }
+    .input-group.input-prefix-inside {
+      position: relative;
+      width: 100%;
+    }
+    .input-group.input-prefix-inside .prefix-inside {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding-left: 18px;
+      font-weight: bold;
+      color: #8b949e;
+      font-size: 1.15em;
+      pointer-events: none;
+      z-index: 2;
+      letter-spacing: 0.03em;
+      background: transparent;
+      user-select: none;
+    }
+    .input-group.input-prefix-inside input {
+      padding-left: 64px;
+      height: 68px;
+      font-size: 1.15em;
+      border-radius: 14px;
+      border: 2px solid #30363d;
+      background: #0d1117;
+      color: #c9d1d9;
+      box-sizing: border-box;
+      width: 100%;
+      display: block;
+    }
+    .input-group.input-prefix-inside .divider {
+      display: inline-block;
+      width: 1.5px;
+      height: 60%;
+      background: #30363d;
+      margin: 0 10px 0 12px;
+      border-radius: 1px;
+      content: '';
+      align-self: center;
+    }
+    .t-prefix-group {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      margin-bottom: 36px;
+      overflow: hidden;
+      background: none;
+      border: none;
+      gap: 0;
+    }
+    .t-prefix {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d1117;
+      color: #58a6ff;
+      font-size: 1.45em;
+      font-weight: bold;
+      border: 2px solid #30363d;
+      border-right: 2px solid #30363d;
+      border-radius: 14px 0 0 14px;
+      height: 68px;
+      min-width: 54px;
+      padding: 0 18px;
+      box-sizing: border-box;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+    .t-prefix-group input {
+      border-left: none;
+      margin-left: -2px;
+      border-radius: 0 14px 14px 0;
+      border: 2px solid #30363d;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 0 28px;
+      font-size: 1.5em;
+      height: 68px;
+      flex: 1 1 auto;
+      margin: 0;
+      box-sizing: border-box;
+      font-weight: 500;
+      outline: none;
+      box-shadow: none;
+    }
+    @media (max-width: 700px) {
+      .t-prefix {
+        font-size: 1em;
+        min-width: 32px;
+        padding: 0 7px;
+        height: 38px;
+      }
+      .t-prefix-group input {
+        height: 38px;
+        font-size: 1em;
+        padding: 0 8px;
+      }
+      .t-prefix-group {
+        min-height: 38px;
+      }
+    }
+    #login input[type="password"], #register input[type="password"] {
+      border-radius: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <div id="sidebarUser"></div>
+    <button id="sidebarLogout" onclick="logout()">ログアウト</button>
+    <div id="storageInfo"></div>
+  </div>
+  <div id="main">
+    <div id="toast"></div>
+    <div id="login" class="container">
+      <h2>ログイン</h2>
+      <label for="loginUser">ユーザー名</label>
+      <div class="input-group t-prefix-group">
+        <span class="t-prefix">T-</span>
+        <input id="loginUser" placeholder="ユーザー名" oninput="checkPasswordRequired()" autocomplete="off" />
+      </div>
+      <div id="passwordField">
+        <label for="loginPass">パスワード</label>
+        <input id="loginPass" type="password" placeholder="例:Japan1234" />
+      </div>
+      <button onclick="doLogin()">ログイン</button>
+      <a href="#" class="register-link-btn" onclick="showRegister();return false;">新規登録はこちら</a>
+      <div id="loginMsg"></div>
+    </div>
+    <div id="register" class="container">
+      <h2>新規アカウント作成</h2>
+      <label for="regUser">ユーザー名</label>
+      <div class="input-group t-prefix-group">
+        <span class="t-prefix">T-</span>
+        <input id="regUser" placeholder="ユーザー名" autocomplete="off" />
+      </div>
+      <label for="regPass">パスワード</label>
+      <input id="regPass" type="password" placeholder="パスワード（空でもOK）" />
+      <button onclick="doRegister()">登録</button>
+      <a href="#" class="back-link-btn" onclick="showLogin();return false;">ログイン画面へ戻る</a>
+      <div id="regMsg"></div>
+    </div>
+    <div id="filelist" class="container filelist-container">
+      <div id="topbar">
+        <div id="breadcrumb"></div>
+        <div id="actions">
+          <form id="uploadForm">
+            <input type="file" id="uploadFile" multiple />
+            <button type="submit">アップロード</button>
+          </form>
+          <form id="mkdirForm">
+            <input type="text" id="newFolderName" placeholder="新しいフォルダ名" />
+            <button type="submit">フォルダ作成</button>
+          </form>
+        </div>
+      </div>
+      <div id="files" class="card-list"></div>
+      <div id="fileContent" style="margin-top:20px;"></div>
+    </div>
+  </div>
+
+<script>
+  let loggedInUser = null;
+  let currentUserHasPassword = false;
+  let currentPath = "";
+  let ws = null; // WebSocketインスタンス
+
+  // API呼び出し用ヘルパー関数
+  async function apiCall(endpoint, method = 'GET', data = null) {
+    try {
+      const options = {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      };
+
+      if (data) {
+        options.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(`/api/${endpoint}`, options);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'API呼び出しに失敗しました');
+      }
+
+      return result;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  }
+
+  // メッセージ表示用ヘルパー関数
+  function showMessage(elementId, message, isError = false) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+  }
+
+  // パスワードが必要かチェック
+  async function checkPasswordRequired() {
+    const username = document.getElementById("loginUser").value.trim();
+    const passwordField = document.getElementById("passwordField");
+    
+    if (!username) {
+      passwordField.style.display = "block";
+      return;
+    }
+
+    // ユーザー名に「T-」プレフィックスを追加
+    const fullUsername = `T-${username}`;
+
+    try {
+      const result = await apiCall('check-password', 'POST', { username: fullUsername });
+      currentUserHasPassword = result.hasPassword;
+      
+      if (result.hasPassword) {
+        passwordField.style.display = "block";
+        document.getElementById("loginPass").required = true;
+      } else {
+        passwordField.style.display = "none";
+        document.getElementById("loginPass").required = false;
+      }
+    } catch (error) {
+      // エラーの場合はパスワード欄を表示
+      passwordField.style.display = "block";
+      document.getElementById("loginPass").required = true;
+    }
+  }
+
+  // UI切り替えアニメーション
+  function fadeIn(el) {
+    el.style.opacity = 0;
+    el.style.display = "block";
+    setTimeout(() => { el.style.transition = "opacity 0.3s"; el.style.opacity = 1; }, 10);
+  }
+  function fadeOut(el) {
+    el.style.transition = "opacity 0.3s";
+    el.style.opacity = 0;
+    setTimeout(() => { el.style.display = "none"; }, 300);
+  }
+
+  function showLogin() {
+    fadeOut(document.getElementById("register"));
+    fadeOut(document.getElementById("filelist"));
+    fadeIn(document.getElementById("login"));
+    document.getElementById("sidebar").style.display = "none";
+    clearMsgs();
+    currentPath = "";
+    document.getElementById("fileContent").innerHTML = "";
+  }
+  function showRegister() {
+    fadeOut(document.getElementById("login"));
+    fadeOut(document.getElementById("filelist"));
+    fadeIn(document.getElementById("register"));
+    document.getElementById("sidebar").style.display = "none";
+    clearMsgs();
+    currentPath = "";
+    document.getElementById("fileContent").innerHTML = "";
+  }
+  function showFileList() {
+    fadeOut(document.getElementById("login"));
+    fadeOut(document.getElementById("register"));
+    fadeIn(document.getElementById("filelist"));
+    document.getElementById("sidebar").style.display = "flex";
+    document.getElementById("sidebarUser").textContent = `T-${loggedInUser.replace(/^T-/,"")}`;
+    renderStorageInfo();
+    currentPath = "";
+    document.getElementById("fileContent").innerHTML = "";
+    loadFiles();
+    connectWebSocket();
+  }
+
+  // メッセージクリア
+  function clearMsgs() {
+    document.getElementById("loginMsg").innerHTML = "";
+    document.getElementById("regMsg").innerHTML = "";
+  }
+
+  // ログイン処理
+  async function doLogin() {
+    const user = document.getElementById("loginUser").value.trim();
+    const pass = document.getElementById("loginPass").value;
+    
+    if (!user) {
+      showMessage("loginMsg", "ユーザー名を入力してください", true);
+      return;
+    }
+
+    if (currentUserHasPassword && !pass) {
+      showMessage("loginMsg", "パスワードを入力してください", true);
+      return;
+    }
+
+    // ユーザー名に「T-」プレフィックスを追加
+    const fullUsername = `T-${user}`;
+
+    try {
+      const result = await apiCall('login', 'POST', { username: fullUsername, password: pass });
+      loggedInUser = fullUsername;
+      currentUserHasPassword = result.hasPassword;
+      showFileList();
+    } catch (error) {
+      showMessage("loginMsg", error.message, true);
+    }
+  }
+
+  // 新規登録処理
+  async function doRegister() {
+    const user = document.getElementById("regUser").value.trim();
+    const pass = document.getElementById("regPass").value;
+    
+    if (!user) {
+      showMessage("regMsg", "ユーザー名を入力してください", true);
+      return;
+    }
+
+    // ユーザー名に「T-」プレフィックスを追加
+    const fullUsername = `T-${user}`;
+
+    try {
+      await apiCall('register', 'POST', { username: fullUsername, password: pass });
+      showMessage("regMsg", "アカウントが作成されました。ログインしてください。");
+      setTimeout(() => {
+        showLogin();
+        document.getElementById("loginUser").value = user;
+        checkPasswordRequired();
+      }, 2000);
+    } catch (error) {
+      showMessage("regMsg", error.message, true);
+    }
+  }
+
+  // パンくずリスト表示
+  function renderBreadcrumb() {
+    const container = document.getElementById("breadcrumb");
+    if (!currentPath) {
+      container.innerHTML = "<b>ルート</b>";
+      return;
+    }
+    const parts = currentPath.split("/").filter(Boolean);
+    let html = '<a href="#" onclick="goToFolder(\"\")">ルート</a> / ';
+    let pathSoFar = "";
+    for (let i = 0; i < parts.length; i++) {
+      pathSoFar += (i > 0 ? "/" : "") + parts[i];
+      if (i === parts.length - 1) {
+        html += `<b>${parts[i]}</b>`;
+      } else {
+        html += `<a href='#' onclick='goToFolder("${pathSoFar}")'>${parts[i]}</a> / `;
+      }
+    }
+    container.innerHTML = html;
+  }
+
+  // フォルダ移動
+  function goToFolder(path) {
+    currentPath = path;
+    loadFiles();
+    document.getElementById("fileContent").innerHTML = "";
+  }
+
+  // ファイル一覧表示
+  async function loadFiles() {
+    try {
+      const result = await apiCall(`files?username=${encodeURIComponent(loggedInUser)}&folder=${encodeURIComponent(currentPath)}`);
+      renderFiles(result.files, result.parentPath);
+      renderBreadcrumb();
+    } catch (error) {
+      document.getElementById("files").innerHTML = `<div class="error">ファイル一覧の取得に失敗しました: ${error.message}</div>`;
+    }
+  }
+
+  // ファイルリストのカード表示改良
+  function renderFiles(files, parentPath) {
+    const container = document.getElementById("files");
+    if (files.length === 0) {
+      container.innerHTML = "<p>ファイルがありません</p>";
+      return;
+    }
+    let html = "";
+    if (currentPath) {
+      html += `<div class='file-item' style='background:#1a2230;'><a href='#' onclick='goToFolder(\"${parentPath}\")'>⬅ 上へ</a></div>`;
+    }
+    for (const file of files) {
+      const icon = file.isDirectory ? "📁" : "📄";
+      const color = file.isDirectory ? "#ffd33d" : "#8b949e";
+      const size = file.isDirectory ? "" : ` (${formatFileSize(file.size)})`;
+      const meta = file.isDirectory ? "フォルダ" : `ファイル・${file.modified.split("T")[0]}`;
+      html += `
+        <div class="file-item" title="${file.name}">
+          <div class="file-info">
+            <span class="file-icon" style="color:${color}">${icon}</span>
+            <span style="font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${file.name}">${file.name}</span>
+          </div>
+          <div class="file-meta">${meta}${size}</div>
+          <div class="file-actions">
+            ${file.isDirectory ? `<button class="download-btn" style="background:#30363d;color:#ffd33d;" onclick="goToFolder('${file.path}')">開く</button>` : `
+              <button class="download-btn" onclick="downloadFile('${file.path}')">ダウンロード</button>
+              <button class="download-btn" style="background:#6c757d;" onclick="viewFileContent('${file.path}')">内容表示</button>
+            `}
+          </div>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  }
+
+  // ファイルサイズのフォーマット
+  function formatFileSize(bytes) {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  }
+
+  // ファイルダウンロード
+  function downloadFile(filepath) {
+    const url = `/api/download?username=${encodeURIComponent(loggedInUser)}&filename=${encodeURIComponent(filepath)}`;
+    window.open(url, '_blank');
+  }
+
+  // ファイル内容表示
+  async function viewFileContent(filepath) {
+    const filename = filepath.split('/').pop();
+    if (isImageFile(filename)) {
+      // 画像ならimgタグで表示
+      const url = `/api/download?username=${encodeURIComponent(loggedInUser)}&filename=${encodeURIComponent(filepath)}`;
+      document.getElementById("fileContent").innerHTML = `<h3>${filename}</h3><img src="${url}" style="max-width:100%;border-radius:8px;box-shadow:0 2px 12px #0003;">`;
+      return;
+    }
+    // それ以外は従来通り
+    try {
+      const result = await apiCall(`file-content?username=${encodeURIComponent(loggedInUser)}&filepath=${encodeURIComponent(filepath)}`);
+      document.getElementById("fileContent").innerHTML = `<h3>${result.filename}</h3><pre style='background:#f8f9fa;padding:10px;border-radius:5px;max-height:400px;overflow:auto;'>${escapeHtml(result.content)}</pre>`;
+    } catch (error) {
+      document.getElementById("fileContent").innerHTML = `<div class="error">ファイル内容の取得に失敗しました: ${error.message}</div>`;
+    }
+  }
+
+  // HTMLエスケープ
+  function escapeHtml(str) {
+    return str.replace(/[&<>'"]/g, function(tag) {
+      const chars = {
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      };
+      return chars[tag] || tag;
+    });
+  }
+
+  // ログアウト
+  function logout() {
+    loggedInUser = null;
+    currentUserHasPassword = false;
+    if (ws) { ws.close(); ws = null; }
+    showLogin();
+  }
+
+  // アップロード
+  document.getElementById("uploadForm").onsubmit = async function(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById("uploadFile");
+    if (!fileInput.files.length) return;
+    const formData = new FormData();
+    for (let i = 0; i < fileInput.files.length; i++) {
+      formData.append("file", fileInput.files[i]);
+    }
+    formData.append("username", loggedInUser);
+    formData.append("folder", currentPath);
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const result = await res.json();
+      if (result.success) {
+        loadFiles();
+        fileInput.value = "";
+        alert(result.message);
+      } else {
+        alert("アップロード失敗: " + (result.error || ""));
+      }
+    } catch (err) {
+      alert("アップロード失敗: " + err.message);
+    }
+  };
+
+  // フォルダ作成
+  document.getElementById("mkdirForm").onsubmit = async function(e) {
+    e.preventDefault();
+    const folderName = document.getElementById("newFolderName").value.trim();
+    if (!folderName) return;
+    try {
+      const res = await fetch("/api/mkdir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: loggedInUser,
+          folder: currentPath,
+          newFolderName: folderName
+        })
+      });
+      const result = await res.json();
+      if (result.success) {
+        loadFiles();
+        document.getElementById("newFolderName").value = "";
+        alert("フォルダ作成成功");
+      } else {
+        alert("フォルダ作成失敗: " + (result.error || ""));
+      }
+    } catch (err) {
+      alert("フォルダ作成失敗: " + err.message);
+    }
+  };
+
+  // ストレージ情報（ダミー）
+  function renderStorageInfo() {
+    // 実際の容量取得はサーバー側で拡張可能
+    document.getElementById("storageInfo").textContent = "ストレージ: 100GB中 2.3GB使用中 (ダミー表示)";
+  }
+
+  // ローディング表示（例: ファイル操作時）
+  function showLoading(msg = "処理中...") {
+    showToast(msg, false);
+  }
+
+  // トースト通知
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.style.display = "block";
+    toast.style.background = isError ? "#f85149" : "#238636";
+    toast.style.color = isError ? "#fff" : "#fff";
+    setTimeout(() => { toast.style.display = "none"; }, 2200);
+  }
+
+  // 画面初期化
+  window.onload = function() {
+    document.getElementById("sidebar").style.display = "none";
+    showLogin();
+  };
+
+  // WebSocket接続・監視
+  function connectWebSocket() {
+    if (ws) {
+      ws.close();
+      ws = null;
+    }
+    if (!loggedInUser) return;
+    const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${wsProtocol}//${location.host}/?username=${encodeURIComponent(loggedInUser)}`);
+    ws.onopen = () => {
+      // console.log('WebSocket接続');
+    };
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.type === "update") {
+          // ファイル/フォルダ変更通知
+          loadFiles();
+        }
+      } catch {}
+    };
+    ws.onclose = () => {
+      // console.log('WebSocket切断');
+    };
+  }
+
+  function isImageFile(filename) {
+    return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(filename);
+  }
+</script>
+
+</body>
+</html>
