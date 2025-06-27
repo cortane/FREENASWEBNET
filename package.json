@@ -1,6 +1,6 @@
 {
   "name": "freenaswebservice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Webベースの軽量NASシステム - シンプルで強力なファイル管理",
   "main": "server.js",
   "bin": {
