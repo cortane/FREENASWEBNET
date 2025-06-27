@@ -92,7 +92,7 @@ Tailscale Funnelを使うと、インターネット経由で安全に自宅サ�
 ### 🔐 認証
 - ユーザー登録（パスワード任意）
 - パスワード付き/なしユーザー対応
-- ユーザー名自動「T-」付与
+- ユーザー名自動「T-」付与（ご自身のドライブ大文字を付与してください）
 - 自動パスワード要否判定
 
 ### 📁 ファイル管理
@@ -124,7 +124,7 @@ Tailscale Funnelを使うと、インターネット経由で安全に自宅サ�
 ## ⚙️ サーバー設定例
 ```js
 const PORT = 3000;           // ポート番号
-const ROOT_DIR = "T:\\Users"; // ルートディレクトリ
+const ROOT_DIR = "T:\\Users"; // ルートディレクトリ（お使いのクラウド用HDDのpathに変更してください。）
 ```
 
 ---
@@ -162,7 +162,7 @@ FREENASWEBNET/
 ├── access.log             # アクセスログ
 ├── server.log             # サーバーログ
 ├── FreeNasWebService.ico  # ファビコン
-└── T:\Users\              # ユーザーデータ（外部）
+└── T:\Users\              # ユーザーデータ（外部・お使いのクラウド用HDDの）
     ├── T-Admin/
     │   └── UPS/
     │       └── Password.txt
@@ -193,6 +193,7 @@ taskkill /PID <PID> /F
 
 ### ログインできない
 ```bash
+# クラウド専用HDDに「Users」フォルダがあるかご確認ください
 Test-Path "T:\Users\T-username"
 Get-Content "T:\Users\T-username\UPS\Password.txt"
 ```
@@ -241,4 +242,4 @@ MIT License
 
 ---
 
-**FreeNAS WebService** - シンプルで強力なWebベースNASシステム 🚀 
+**FreeNAS WebService** - シンプルで強力なWebベースNASシステム 🚀
