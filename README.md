@@ -166,7 +166,7 @@ FREENASWEBNET/
 T:(外部記憶容量装置path)
     ├── T-（username）/
     │   └── UPS/
-    │       └── Password.txt
+    │       └── Password.txt(この中にパスワードが記入される、※パスワードがない場合はUPSフォルダ自体が生成されない。)
     ├── T-user1/
     └── T-user2/
 ```
