@@ -352,6 +352,26 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ファビコンファイルを配信
+  if (pathname === "/FreeNasWebService.ico" || pathname === "/favicon.ico" || pathname === "/icon.ico") {
+    fs.readFile("FreeNasWebService.ico", (err, data) => {
+      if (err) {
+        errorCount++;
+        logServerEvent('ERROR', 'ファビコンファイル読み込み失敗', { error: err.message });
+        res.writeHead(404);
+        res.end("favicon not found");
+        return;
+      }
+      res.writeHead(200, { 
+        "Content-Type": "image/x-icon",
+        "Cache-Control": "public, max-age=86400",
+        "Access-Control-Allow-Origin": "*"
+      });
+      res.end(data);
+    });
+    return;
+  }
+
   // APIエンドポイント
   if (pathname === "/api/check-password" && req.method === "POST") {
     try {
@@ -893,7 +913,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   logServerEvent('STARTUP', 'NASサーバーが起動しました', { 
     port: PORT,
     rootDir: ROOT_DIR,
@@ -901,7 +921,8 @@ server.listen(PORT, () => {
     platform: os.platform(),
     arch: os.arch()
   });
-  console.log(`NASが http://localhost:${PORT} で起動中 (ROOT=${ROOT_DIR})`);
+  console.log(`NASが http://0.0.0.0:${PORT} で起動中 (ROOT=${ROOT_DIR})`);
+  console.log(`Tailscaleドメイン: https://nec.tailf3f3f4.ts.net/`);
   console.log(`APIエンドポイント:`);
   console.log(`  POST /api/check-password - パスワード必要判定`);
   console.log(`  POST /api/register - アカウント作成`);
