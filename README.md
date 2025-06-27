@@ -161,9 +161,10 @@ FREENASWEBNET/
 ├── .gitignore             # Git除外設定
 ├── access.log             # アクセスログ
 ├── server.log             # サーバーログ
-├── FreeNasWebService.ico  # ファビコン
-└── （外部ストレージ例：T:\\Users\\） # ※このパスはリポジトリ外部。クラウド用HDDやNAS上のユーザーデータ保存先
-    ├── T-Admin/
+└── FreeNasWebService.ico  # ファビコン
+（外部ストレージ例：T:\\Users\\） # ※このパスはリポジトリ外部。クラウド用HDDやNAS上のユーザーデータ保存先
+T:(外部記憶容量装置path)
+    ├── T-（username）/
     │   └── UPS/
     │       └── Password.txt
     ├── T-user1/
