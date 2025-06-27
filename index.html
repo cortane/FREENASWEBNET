@@ -236,15 +236,21 @@
       margin: 12px 0;
       font-size: 16px;
     }
-    #fileContent pre {
-      background: #f8f9fa;
-      color: #24292f;
-      border: 1px solid #30363d;
-      border-radius: 7px;
-      padding: 14px;
-      font-size: 16px;
-      max-height: 400px;
+    #fileContent pre, .code-view {
+      background: #161b22;
+      color: #c9d1d9;
+      border: 1.5px solid #30363d;
+      border-radius: 8px;
+      padding: 18px 18px 18px 24px;
+      font-size: 15px;
+      font-family: 'Fira Mono', 'Consolas', 'Menlo', 'Monaco', monospace;
+      max-height: 480px;
       overflow: auto;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      line-height: 1.7;
+      margin: 0 0 18px 0;
+      white-space: pre-wrap;
+      word-break: break-all;
     }
     #toast {
       position: fixed;
@@ -571,6 +577,7 @@
       border-radius: 14px;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 </head>
 <body>
   <div id="sidebar">
@@ -623,7 +630,9 @@
         </div>
       </div>
       <div id="files" class="card-list"></div>
-      <div id="fileContent" style="margin-top:20px;"></div>
+      <div id="fileContent" style="margin-top:20px;">
+        <div id="fileContentEditor" style="height:480px;"></div>
+      </div>
     </div>
   </div>
 
@@ -899,10 +908,51 @@
       document.getElementById("fileContent").innerHTML = `<h3>${filename}</h3><img src="${url}" style="max-width:100%;border-radius:8px;box-shadow:0 2px 12px #0003;">`;
       return;
     }
-    // それ以外は従来通り
     try {
       const result = await apiCall(`file-content?username=${encodeURIComponent(loggedInUser)}&filepath=${encodeURIComponent(filepath)}`);
-      document.getElementById("fileContent").innerHTML = `<h3>${result.filename}</h3><pre style='background:#f8f9fa;padding:10px;border-radius:5px;max-height:400px;overflow:auto;'>${escapeHtml(result.content)}</pre>`;
+      document.getElementById("fileContent").innerHTML = `<h3>${result.filename}</h3><div id='fileContentEditor' style='height:480px;'></div>`;
+      // Monaco Editorの言語判定
+      const ext = filename.split('.').pop().toLowerCase();
+      let lang = 'plaintext';
+      if (["js","jsx"].includes(ext)) lang = "javascript";
+      else if (["ts","tsx"].includes(ext)) lang = "typescript";
+      else if (["json"].includes(ext)) lang = "json";
+      else if (["html","htm"].includes(ext)) lang = "html";
+      else if (["css","scss","sass"].includes(ext)) lang = "css";
+      else if (["py"].includes(ext)) lang = "python";
+      else if (["java"].includes(ext)) lang = "java";
+      else if (["c","h"].includes(ext)) lang = "c";
+      else if (["cpp","cc","cxx","hpp","hxx"].includes(ext)) lang = "cpp";
+      else if (["sh","bash"].includes(ext)) lang = "shell";
+      else if (["md"].includes(ext)) lang = "markdown";
+      else if (["xml"].includes(ext)) lang = "xml";
+      else if (["yml","yaml"].includes(ext)) lang = "yaml";
+      else if (["php"].includes(ext)) lang = "php";
+      else if (["rb"].includes(ext)) lang = "ruby";
+      else if (["go"].includes(ext)) lang = "go";
+      else if (["rs"].includes(ext)) lang = "rust";
+      else if (["cs"].includes(ext)) lang = "csharp";
+      else if (["sql"].includes(ext)) lang = "sql";
+      // Monaco Editor初期化
+      require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+      require(["vs/editor/editor.main"], function () {
+        if (window.fileContentEditorInstance) {
+          window.fileContentEditorInstance.dispose();
+        }
+        window.fileContentEditorInstance = monaco.editor.create(document.getElementById("fileContentEditor"), {
+          value: result.content,
+          language: lang,
+          theme: "vs-dark",
+          readOnly: true,
+          fontSize: 15,
+          lineNumbers: "on",
+          wordWrap: "on",
+          minimap: { enabled: false },
+          folding: true,
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+        });
+      });
     } catch (error) {
       document.getElementById("fileContent").innerHTML = `<div class="error">ファイル内容の取得に失敗しました: ${error.message}</div>`;
     }
