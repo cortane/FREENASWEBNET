@@ -4,17 +4,17 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-console.log('🚀 NasNetFree インストーラー');
-console.log('========================');
+console.log('🚀 FreeNAS WebService インストーラー');
+console.log('====================================');
 
 // デフォルト設定
 const defaultConfig = {
   port: 3000,
-  rootDir: path.join(os.homedir(), 'NasNetFree')
+  rootDir: path.join(os.homedir(), 'FreeNASWebService')
 };
 
 // 設定ファイルのパス
-const configPath = path.join(os.homedir(), '.nasnetfree', 'config.json');
+const configPath = path.join(os.homedir(), '.freenaswebservice', 'config.json');
 
 // 設定ディレクトリを作成
 const configDir = path.dirname(configPath);
@@ -37,8 +37,8 @@ if (!fs.existsSync(defaultConfig.rootDir)) {
 
 console.log('\n🎉 インストール完了！');
 console.log('\n使用方法:');
-console.log('  nasnetfree                    # デフォルト設定で起動');
-console.log('  nasnetfree --port 8080        # ポート指定で起動');
-console.log('  nasnetfree --root /path/to/dir # ルートディレクトリ指定');
+console.log('  freenaswebservice                    # デフォルト設定で起動');
+console.log('  freenaswebservice --port 8080        # ポート指定で起動');
+console.log('  freenaswebservice --root /path/to/dir # ルートディレクトリ指定');
 console.log('\n設定ファイル: ' + configPath);
 console.log('ルートディレクトリ: ' + defaultConfig.rootDir); 

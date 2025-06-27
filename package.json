@@ -1,16 +1,16 @@
 {
-  "name": "nasnetfree",
+  "name": "freenaswebservice",
   "version": "1.0.0",
   "description": "Webベースの軽量NASシステム - シンプルで強力なファイル管理",
   "main": "server.js",
   "bin": {
-    "nasnetfree": "./server.js"
+    "freenaswebservice": "./server.js"
   },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
     "install-global": "npm install -g .",
-    "uninstall-global": "npm uninstall -g nasnetfree",
+    "uninstall-global": "npm uninstall -g freenaswebservice",
     "postinstall": "node install.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "echo \"No linter configured\"",
@@ -44,21 +44,23 @@
     "nodejs",
     "file-browser",
     "storage",
-    "file-sharing"
+    "file-sharing",
+    "freenas",
+    "webservice"
   ],
   "author": {
-    "name": "NasNetFree Team",
-    "email": "support@nasnetfree.com"
+    "name": "FreeNAS WebService Team",
+    "email": "support@freenaswebservice.com"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nasnetfree/nasnetfree.git"
+    "url": "https://github.com/cortane/FREENASWEBNET.git"
   },
   "bugs": {
-    "url": "https://github.com/nasnetfree/nasnetfree/issues"
+    "url": "https://github.com/cortane/FREENASWEBNET/issues"
   },
-  "homepage": "https://github.com/nasnetfree/nasnetfree#readme",
+  "homepage": "https://github.com/cortane/FREENASWEBNET#readme",
   "files": [
     "server.js",
     "index.html",

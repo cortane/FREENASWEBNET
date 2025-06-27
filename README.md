@@ -1,25 +1,25 @@
-# NasNetFree - Webベースの簡易NASシステム
+# FreeNAS WebService - Webベースの簡易NASシステム
 
 ## 📋 概要
 
-**NasNetFree** は、Node.js で構築された軽量な NAS (Network Attached Storage) 風ファイルブラウザです。シンプルな Web UI を通じて、ファイル管理が可能です。
+**FreeNAS WebService** は、Node.js で構築された軽量な NAS (Network Attached Storage) 風ファイルブラウザです。シンプルな Web UI を通じて、ファイル管理が可能です。
 
 ## 🚀 インストール方法
 
 ### グローバルインストール（推奨）
 ```bash
-npm install -g nasnetfree
+npm install -g freenaswebservice
 ```
 
 ### ローカルインストール
 ```bash
-npm install nasnetfree
+npm install freenaswebservice
 ```
 
 ### 手動インストール
 ```bash
-git clone https://github.com/nasnetfree/nasnetfree.git
-cd nasnetfree
+git clone https://github.com/cortane/FREENASWEBNET.git
+cd FREENASWEBNET
 npm install
 ```
 
@@ -27,12 +27,12 @@ npm install
 
 ### グローバルインストール後
 ```bash
-nasnetfree
+freenaswebservice
 ```
 
 ### ローカルインストール後
 ```bash
-npx nasnetfree
+npx freenaswebservice
 ```
 
 ### 手動インストール後
@@ -48,7 +48,7 @@ node server.js
 ## 📦 パッケージ情報
 
 ### npmパッケージとして配布
-- **パッケージ名**: `nasnetfree`
+- **パッケージ名**: `freenaswebservice`
 - **バージョン**: 1.0.0
 - **ライセンス**: MIT
 - **Node.js要件**: >=14.0.0
@@ -56,9 +56,9 @@ node server.js
 - **対応CPU**: x64, x86, arm64
 
 ### インストール時の自動設定
-- 設定ディレクトリ: `~/.nasnetfree/`
-- 設定ファイル: `~/.nasnetfree/config.json`
-- デフォルトルート: `~/NasNetFree/`
+- 設定ディレクトリ: `~/.freenaswebservice/`
+- 設定ファイル: `~/.freenaswebservice/config.json`
+- デフォルトルート: `~/FreeNASWebService/`
 
 ## 📋 実装済み機能
 
@@ -130,7 +130,7 @@ const ROOT_DIR = "T:\\Users"; // ルートディレクトリ
 ## 📁 ファイル構造
 
 ```
-NASfolder/
+FREENASWEBNET/
 ├── server.js              # メインサーバーファイル
 ├── index.html             # フロントエンドUI
 ├── install.js             # インストールスクリプト
@@ -230,7 +230,7 @@ npm publish
 npm install -g .
 
 # アンインストール
-npm uninstall -g nasnetfree
+npm uninstall -g freenaswebservice
 ```
 
 ## 📝 ライセンス
@@ -239,4 +239,4 @@ MIT License
 
 ---
 
-**NasNetFree** - シンプルで強力なWebベースNASシステム 🚀 
+**FreeNAS WebService** - シンプルで強力なWebベースNASシステム 🚀 
