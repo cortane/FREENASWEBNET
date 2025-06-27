@@ -273,4 +273,23 @@ MIT License
 
 ---
 
+## ⚠️ パッケージインストール時の注意（index.htmlが無い場合）
+
+まれにnpmパッケージインストール時、`index.html`が正しく含まれない場合があります。
+
+### 対処方法
+1. 最新の`index.html`を[GitHubリポジトリ](https://github.com/cortane/FREENASWEBNET)から手動でダウンロード
+2. PowerShellまたはコマンドプロンプトで、`index.html`があるディレクトリ（例：NASfolder）に移動
+   ```powershell
+   cd パス\NASfolder
+   ```
+3. 下記コマンドでサーバーを起動
+   ```bash
+   npx freenaswebservice
+   ```
+
+これでWeb UIが正しく表示されます。
+
+---
+
 **FreeNAS WebService** - シンプルで強力なWebベースNASシステム 🚀
