@@ -162,13 +162,18 @@ FREENASWEBNET/
 ├── access.log             # アクセスログ
 ├── server.log             # サーバーログ
 ├── FreeNasWebService.ico  # ファビコン
-└── T:\Users\              # ユーザーデータ（外部・お使いのクラウド用HDDの）
+└── （外部ストレージ例：T:\\Users\\） # ※このパスはリポジトリ外部。クラウド用HDDやNAS上のユーザーデータ保存先
     ├── T-Admin/
     │   └── UPS/
     │       └── Password.txt
     ├── T-user1/
     └── T-user2/
 ```
+
+> **注記:**  
+> `T:\Users\`は本リポジトリ内には存在しません。  
+> サーバー設定（ROOT_DIR）で指定した「クラウド用HDDやNAS上のユーザーデータ保存先」を指します。  
+> 必要に応じてご自身の環境に合わせてパスを設定してください。
 
 ---
 
