@@ -7,11 +7,14 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="icon" type="image/x-icon" href="icon.ico">
   <link rel="shortcut icon" type="image/x-icon" href="FreeNasWebService.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+
     body {
       background: #0d1117;
       color: #c9d1d9;
-      font-family: 'Segoe UI', 'Meiryo', 'Hiragino Sans', 'Arial', sans-serif;
+      font-family: 'Dancing Script', cursive, 'Segoe UI', 'Meiryo', 'Hiragino Sans', 'Arial', sans-serif;
       margin: 0;
       min-height: 100vh;
       display: flex;
@@ -76,13 +79,14 @@
       margin: 90px auto 0 auto;
       border: 2px solid #30363d;
     }
-    h2, h3 {
+    h1, h2, h3 {
       color: #c9d1d9;
       margin-top: 0;
       font-size: 2.8rem;
       letter-spacing: 0.01em;
       margin-bottom: 40px;
       font-weight: 800;
+      font-family: 'Dancing Script', cursive !important;
     }
     #topbar {
       display: flex;
@@ -213,6 +217,8 @@
       transition: background 0.2s, color 0.2s;
       cursor: pointer;
       margin-left: 0;
+      font-family: 'Dancing Script', cursive !important;
+      letter-spacing: 0.04em;
     }
     .download-btn:hover {
       background: #30363d;
@@ -576,6 +582,77 @@
     #login input[type="password"], #register input[type="password"] {
       border-radius: 14px;
     }
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(13,17,23,0.98);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.45s cubic-bezier(.4,0,.2,1), filter 0.45s cubic-bezier(.4,0,.2,1);
+      opacity: 0;
+      pointer-events: none;
+      filter: blur(0.5px);
+      backdrop-filter: blur(2.5px);
+    }
+    #loadingOverlay.active {
+      opacity: 1;
+      pointer-events: auto;
+      filter: blur(0px);
+    }
+    #loadingOverlay .spinner, #loadingOverlay .loading-text {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.45s cubic-bezier(.4,0,.2,1), transform 0.45s cubic-bezier(.4,0,.2,1);
+    }
+    #loadingOverlay.active .spinner, #loadingOverlay.active .loading-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .spinner {
+      border: 7px solid #30363d;
+      border-top: 7px solid #58a6ff;
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 18px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loading-text {
+      color: #c9d1d9;
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 8px #000a;
+      display: flex;
+      align-items: center;
+    }
+    .loading-dots {
+      display: inline-block;
+      width: 32px;
+      text-align: left;
+    }
+    @keyframes dots {
+      0% { content: ""; }
+      20% { content: "."; }
+      40% { content: ".."; }
+      60% { content: "..."; }
+      80% { content: ".."; }
+      100% { content: "."; }
+    }
+    .loading-dots::after {
+      content: "";
+      animation: dots 1.2s infinite steps(4);
+      font-size: 1.5rem;
+      color: #58a6ff;
+      letter-spacing: 0.1em;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 </head>
@@ -587,6 +664,10 @@
   </div>
   <div id="main">
     <div id="toast"></div>
+    <div id="loadingOverlay" style="display:none;">
+      <div class="spinner"></div>
+      <div class="loading-text">now loading<span class="loading-dots"></span></div>
+    </div>
     <div id="login" class="container">
       <h2>ログイン</h2>
       <label for="loginUser">ユーザー名</label>
@@ -641,6 +722,7 @@
   let currentUserHasPassword = false;
   let currentPath = "";
   let ws = null; // WebSocketインスタンス
+  let loadingStartTime = 0;
 
   // API呼び出し用ヘルパー関数
   async function apiCall(endpoint, method = 'GET', data = null) {
@@ -760,27 +842,25 @@
   async function doLogin() {
     const user = document.getElementById("loginUser").value.trim();
     const pass = document.getElementById("loginPass").value;
-    
     if (!user) {
       showMessage("loginMsg", "ユーザー名を入力してください", true);
       return;
     }
-
     if (currentUserHasPassword && !pass) {
       showMessage("loginMsg", "パスワードを入力してください", true);
       return;
     }
-
-    // ユーザー名に「T-」プレフィックスを追加
     const fullUsername = `T-${user}`;
-
     try {
+      showLoading("now loading...");
       const result = await apiCall('login', 'POST', { username: fullUsername, password: pass });
       loggedInUser = fullUsername;
       currentUserHasPassword = result.hasPassword;
       showFileList();
     } catch (error) {
       showMessage("loginMsg", error.message, true);
+    } finally {
+      hideLoading();
     }
   }
 
@@ -788,25 +868,25 @@
   async function doRegister() {
     const user = document.getElementById("regUser").value.trim();
     const pass = document.getElementById("regPass").value;
-    
     if (!user) {
       showMessage("regMsg", "ユーザー名を入力してください", true);
       return;
     }
-
-    // ユーザー名に「T-」プレフィックスを追加
     const fullUsername = `T-${user}`;
-
     try {
+      showLoading("now loading...");
       await apiCall('register', 'POST', { username: fullUsername, password: pass });
       showMessage("regMsg", "アカウントが作成されました。ログインしてください。");
       setTimeout(() => {
-        showLogin();
-        document.getElementById("loginUser").value = user;
-        checkPasswordRequired();
+        hideLoading(() => {
+          showLogin();
+          document.getElementById("loginUser").value = user;
+          checkPasswordRequired();
+        });
       }, 2000);
     } catch (error) {
       showMessage("regMsg", error.message, true);
+      hideLoading();
     }
   }
 
@@ -903,13 +983,14 @@
   async function viewFileContent(filepath) {
     const filename = filepath.split('/').pop();
     if (isImageFile(filename)) {
-      // 画像ならimgタグで表示
       const url = `/api/download?username=${encodeURIComponent(loggedInUser)}&filename=${encodeURIComponent(filepath)}`;
       document.getElementById("fileContent").innerHTML = `<h3>${filename}</h3><img src="${url}" style="max-width:100%;border-radius:8px;box-shadow:0 2px 12px #0003;">`;
       return;
     }
     try {
+      showLoading("now loading...");
       const result = await apiCall(`file-content?username=${encodeURIComponent(loggedInUser)}&filepath=${encodeURIComponent(filepath)}`);
+      hideLoading();
       document.getElementById("fileContent").innerHTML = `<h3>${result.filename}</h3><div id='fileContentEditor' style='height:480px;'></div>`;
       // Monaco Editorの言語判定
       const ext = filename.split('.').pop().toLowerCase();
@@ -933,7 +1014,6 @@
       else if (["rs"].includes(ext)) lang = "rust";
       else if (["cs"].includes(ext)) lang = "csharp";
       else if (["sql"].includes(ext)) lang = "sql";
-      // Monaco Editor初期化
       require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
       require(["vs/editor/editor.main"], function () {
         if (window.fileContentEditorInstance) {
@@ -954,6 +1034,7 @@
         });
       });
     } catch (error) {
+      hideLoading();
       document.getElementById("fileContent").innerHTML = `<div class="error">ファイル内容の取得に失敗しました: ${error.message}</div>`;
     }
   }
@@ -973,7 +1054,12 @@
     loggedInUser = null;
     currentUserHasPassword = false;
     if (ws) { ws.close(); ws = null; }
-    showLogin();
+    showLoading("now loading...");
+    setTimeout(() => {
+      hideLoading(() => {
+        showLogin();
+      });
+    }, 600);
   }
 
   // アップロード
@@ -988,6 +1074,7 @@
     formData.append("username", loggedInUser);
     formData.append("folder", currentPath);
     try {
+      showLoading("now loading...");
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const result = await res.json();
       if (result.success) {
@@ -999,6 +1086,8 @@
       }
     } catch (err) {
       alert("アップロード失敗: " + err.message);
+    } finally {
+      hideLoading();
     }
   };
 
@@ -1037,8 +1126,15 @@
   }
 
   // ローディング表示（例: ファイル操作時）
-  function showLoading(msg = "処理中...") {
-    showToast(msg, false);
+  function showLoading(msg = "now loading...") {
+    const overlay = document.getElementById("loadingOverlay");
+    overlay.querySelector('.loading-text').textContent = msg;
+    overlay.style.display = "flex";
+    // requestAnimationFrameで確実に再描画を挟んでからactiveクラスを付与
+    requestAnimationFrame(() => {
+      overlay.classList.add("active");
+    });
+    loadingStartTime = Date.now();
   }
 
   // トースト通知
@@ -1085,6 +1181,25 @@
 
   function isImageFile(filename) {
     return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(filename);
+  }
+
+  function hideLoading(onHidden) {
+    const overlay = document.getElementById("loadingOverlay");
+    const minDuration = 800; // ms
+    const fadeDuration = 350; // ms
+    const elapsed = Date.now() - loadingStartTime;
+    const hide = () => {
+      overlay.classList.remove("active");
+      setTimeout(() => {
+        overlay.style.display = "none";
+        if (typeof onHidden === 'function') onHidden();
+      }, fadeDuration);
+    };
+    if (elapsed < minDuration) {
+      setTimeout(hide, minDuration - elapsed);
+    } else {
+      hide();
+    }
   }
 </script>
 
